@@ -6,10 +6,6 @@
 
 <script setup>
 defineProps({
-  label: {
-    type: String,
-    required: true,
-  },
   type: {
     type: String,
     default: 'primary',
