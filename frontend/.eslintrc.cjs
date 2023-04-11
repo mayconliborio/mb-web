@@ -1,10 +1,10 @@
 module.exports = {
     extends: [
-        'plugin:vue/vue3-essential',
+        'plugin:vue/vue3-recommended',
         'eslint:recommended',
         'prettier',
     ],
-    plugins: ['vue', 'prettier'],
+    plugins: ['prettier'],
     rules: {
         'vue/multi-word-component-names': 'off',
         'prettier/prettier': 'error',
