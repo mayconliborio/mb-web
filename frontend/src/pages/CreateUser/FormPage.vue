@@ -1,42 +1,47 @@
 <template>
   <div class="page">
-    <header class="page__header">
+    <div class="page__header">
       <div class="stepper">
         <div
           v-for="(step, index) in stepHeaders"
-          :key="step & { index }"
+          :key="`step-${index}`"
           v-show="currentStepIndex === index"
-          :class="{ currentStepIndex }"
         >
-          Etapa <span style="color: orange"> {{ index + 1 }}</span> de
-          {{ stepHeaders.length }} <br />
-          <h2>{{ step.title }}</h2>
+          <p>
+            Etapa <span style="color: orange"> {{ index + 1 }}</span> de
+            {{ stepHeaders.length }}
+          </p>
+          <h2>{{ step }}</h2>
         </div>
       </div>
-    </header>
+    </div>
 
     <section class="page__content">
       <form>
         <Step1
           v-if="currentStepIndex === 0"
           :options="options"
-          :form-data="formData"
-          @update:form-data="updateFormData($event)"
+          :dados-formulario="dadosFormulario"
+          @emit-error="errorManager($event)"
+          @update:dados-formulario="updateDadosFormulario($event)"
         />
         <Step2
           v-if="currentStepIndex === 1"
-          :form-data="formData"
-          @update:form-data="updateFormData($event)"
+          :dados-formulario="dadosFormulario"
+          @emit-error="errorManager($event)"
+          @update:dados-formulario="updateDadosFormulario($event)"
         />
         <Step3
           v-if="currentStepIndex === 2"
-          :form-data="formData"
-          @update:form-data="updateFormData($event)"
+          :dados-formulario="dadosFormulario"
+          @emit-error="errorManager($event)"
+          @update:dados-formulario="updateDadosFormulario($event)"
         />
         <Step4
           v-if="currentStepIndex === 3"
-          :form-data="formData"
-          @update:form-data="updateFormData($event)"
+          :dados-formulario="dadosFormulario"
+          @emit-error="errorManager($event)"
+          @update:dados-formulario="updateDadosFormulario($event)"
         />
       </form>
     </section>
@@ -47,7 +52,7 @@
       </DefaultButton>
       <DefaultButton
         type="primary"
-        :disabled="!hasSelectedPessoa"
+        :disabled="!hasSelectedPessoa || errors.length > 0"
         @click="isLastStep ? submitForm() : goToNextStep()"
       >
         {{ isLastStep ? 'Cadastrar' : 'Continuar' }}
@@ -60,25 +65,29 @@
 import { computed, ref } from 'vue';
 import { Step1, Step2, Step3, Step4 } from './components/';
 import { DefaultButton } from '../../components/';
+const PESSOA_FISICA = 'fisica',
+  PESSOA_JURIDICA = 'juridica';
 
 const currentStepIndex = ref(0);
+const errors = ref([]);
 const stepHeaders = computed(() => [
   'Seja bem vindo(a)',
   `Pessoa ${isPessoaFisica.value ? 'Física' : 'Jurídica'}`,
   'Senha de acesso',
   'Revise suas informações',
 ]);
-const options = ref([
-  {
+const options = ref({
+  fisica: {
     label: 'Pessoa Física',
-    value: 'fisica',
+    value: PESSOA_JURIDICA,
   },
-  {
+  juridica: {
     label: 'Pessoa Jurídica',
-    value: 'juridica',
+    value: PESSOA_FISICA,
   },
-]);
-const formData = ref({
+});
+
+const dadosFormulario = ref({
   email: '',
   tipoPessoa: '',
   nome: '',
@@ -88,10 +97,10 @@ const formData = ref({
   senha: '',
 });
 const isPessoaFisica = computed(() => {
-  return formData.value.tipoPessoa === options.value[0].value;
+  return dadosFormulario.value.tipoPessoa === PESSOA_FISICA;
 });
 const isPessoaJuridica = computed(() => {
-  return formData.value.tipoPessoa === options.value[1].value;
+  return dadosFormulario.value.tipoPessoa === PESSOA_JURIDICA;
 });
 const hasSelectedPessoa = computed(() => {
   return isPessoaJuridica.value || isPessoaFisica.value;
@@ -110,13 +119,12 @@ function backToPrevStep() {
 }
 
 function goToNextStep() {
-  console.log(!isLastStep.value, hasSelectedPessoa.value);
   if (!isLastStep.value && hasSelectedPessoa.value) {
     currentStepIndex.value += 1;
   }
 }
 
-function schemmaPessoa() {
+function createTipoPessoa() {
   const {
     nome,
     data,
@@ -125,7 +133,7 @@ function schemmaPessoa() {
     email,
     senha,
     tipoPessoa,
-  } = formData.value;
+  } = dadosFormulario.value;
   const pessoa = {
     email,
     telefone,
@@ -133,13 +141,13 @@ function schemmaPessoa() {
   };
 
   switch (tipoPessoa) {
-    case 'fisica': {
+    case PESSOA_FISICA: {
       pessoa.nome = nome;
       pessoa.cpf = identificacaoFiscal;
       pessoa.dataNascimento = data;
       break;
     }
-    case 'juridica': {
+    case PESSOA_JURIDICA: {
       pessoa.razaoSocial = nome;
       pessoa.cnpj = identificacaoFiscal;
       pessoa.dataAbertura = data;
@@ -153,7 +161,7 @@ function schemmaPessoa() {
 }
 
 function submitForm() {
-  let pessoa = schemmaPessoa();
+  let pessoa = createTipoPessoa();
 
   console.log(pessoa);
 
@@ -163,15 +171,50 @@ function submitForm() {
   if (isPessoaJuridica.value) {
     //cadastrar pessoa juridica
   }
+
+  dadosFormulario.value = {
+    email: '',
+    tipoPessoa: '',
+    nome: '',
+    identificacaoFiscal: '',
+    data: '',
+    telefone: '',
+    senha: '',
+  };
+
+  currentStepIndex.value = 0;
 }
 
-function updateFormData(data) {
-  formData.value = data;
+function updateDadosFormulario(data) {
+  dadosFormulario.value = data;
+}
+
+//Sempre que um campo é alterado um erro é emitido e gerenciado por essa função
+function errorManager(error) {
+  //se o erro já foi registrado o encontramos aqui
+  let errorIndex = errors.value.findIndex((e) => e.id === error.id);
+  //se existe uma mensagem de erro salvamos aqui
+  let hasNewError = error.message.length > 0;
+
+  //se existe uma mensagem de erro e ainda não registramos aquele id, o registramos aqui
+  if (errorIndex < 0 && hasNewError) {
+    errors.value.push(error);
+  }
+
+  //se o id ja foi cadastrado, substituimos a mensagem de erro
+  if (errorIndex >= 0 && hasNewError) {
+    errors[errorIndex].message = error.message;
+  }
+
+  //se não existe uma mensagem de erro mas temos um erro anterior do mesmo ID, removemos ele
+  if (!hasNewError && errorIndex >= 0) {
+    errors.value.splice(errorIndex, 1);
+  }
 }
 </script>
 
 <style scoped>
 .page {
-  max-width: 400px;
+  max-width: 500px;
 }
 </style>
