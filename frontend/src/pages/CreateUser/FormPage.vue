@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <div class="page__header">
+    <header class="page__header">
       <div class="stepper">
         <div
           v-for="(step, index) in stepHeaders"
@@ -14,7 +14,7 @@
           <h2>{{ step }}</h2>
         </div>
       </div>
-    </div>
+    </header>
 
     <section class="page__content">
       <form>
@@ -46,18 +46,18 @@
       </form>
     </section>
 
-    <div class="page__footer">
+    <footer class="page__footer" :class="{ 'solo-button': isFirstStep }">
       <DefaultButton v-if="!isFirstStep" type="cancel" @click="backToPrevStep">
         Voltar
       </DefaultButton>
       <DefaultButton
         type="primary"
-        :disabled="!hasSelectedPessoa || errors.length > 0"
+        :disabled="(!hasSelectedPessoa && isFirstStep) || errors.length > 0"
         @click="isLastStep ? submitForm() : goToNextStep()"
       >
         {{ isLastStep ? 'Cadastrar' : 'Continuar' }}
       </DefaultButton>
-    </div>
+    </footer>
   </div>
 </template>
 
@@ -114,6 +114,7 @@ const isLastStep = computed(() => {
 
 function backToPrevStep() {
   if (!isFirstStep.value && hasSelectedPessoa.value) {
+    errors.value = [];
     currentStepIndex.value -= 1;
   }
 }
@@ -203,7 +204,7 @@ function errorManager(error) {
 
   //se o id ja foi cadastrado, substituimos a mensagem de erro
   if (errorIndex >= 0 && hasNewError) {
-    errors[errorIndex].message = error.message;
+    errors.value[errorIndex].message = error.message;
   }
 
   //se não existe uma mensagem de erro mas temos um erro anterior do mesmo ID, removemos ele
@@ -214,7 +215,24 @@ function errorManager(error) {
 </script>
 
 <style scoped>
+.solo-button {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+}
 .page {
-  max-width: 500px;
+  margin: 50px 0 0 0;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.page__footer {
+  display: flex;
+  justify-content: space-between;
+}
+.page__footer,
+.page__content {
+  margin-top: 20px;
 }
 </style>
