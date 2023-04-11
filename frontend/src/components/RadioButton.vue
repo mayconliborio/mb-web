@@ -1,15 +1,17 @@
 <template>
-  <label :for="id" class="radio" :class="{ checked: checked }">
-    <input
-      :id="id"
-      :value="value"
-      :checked="checked"
-      :name="name"
-      type="radio"
-      @input="updateValue({ checked: $event.target.checked, value })"
-    />
-    {{ label }}
-  </label>
+  <div class="radio-btn">
+    <label :for="id" class="radio" :class="{ checked: checked }">
+      <input
+        :id="id"
+        :value="value"
+        :checked="checked"
+        :name="name"
+        type="radio"
+        @input="updateValue({ checked: $event.target.checked, value })"
+      />
+      {{ label }}
+    </label>
+  </div>
 </template>
 
 <script setup>
@@ -88,5 +90,9 @@ label.checked:before {
   bottom: 6px;
   background-color: orange;
   border-radius: 50%;
+}
+
+.radio-btn {
+  margin: 8px 0;
 }
 </style>

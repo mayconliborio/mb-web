@@ -47,4 +47,9 @@ function updateDadosFormulario(data) {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.form-row {
+  display: flex;
+  justify-content: space-between;
+}
+</style>

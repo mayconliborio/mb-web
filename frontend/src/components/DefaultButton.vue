@@ -18,7 +18,8 @@ defineProps({
 .btn {
   border-radius: 4px;
   width: 100%;
-  max-width: 300px;
+  min-width: 100px;
+  max-width: 140px;
   padding: 6px 8px;
   font-size: 16px;
   border: 1px solid orange;
