@@ -1,53 +1,73 @@
 <template>
-  <FieldText
-    :label="nome.label"
-    :name="nome.name"
-    :value="formData.nome"
-    @update:value="emit('update:form-data', { ...formData, nome: $event })"
-  />
-  <FieldText
-    :label="identificacaoFiscal.label"
-    :name="identificacaoFiscal.name"
-    :value="formData.identificacaoFiscal"
+  <TextField
+    required
+    :label="fieldNome.label"
+    :name="fieldNome.name"
+    :value="dadosFormulario.nome"
+    @emit-error="emit('emit-error', $event)"
     @update:value="
-      emit('update:form-data', { ...formData, identificacaoFiscal: $event })
+      emit('update:dados-formulario', { ...dadosFormulario, nome: $event })
     "
   />
-  <FieldText
-    :label="data.label"
-    :name="data.name"
-    :value="formData.data"
-    @update:value="emit('update:form-data', { ...formData, data: $event })"
+  <TextField
+    required
+    :label="fieldIdentificacaoFiscal.label"
+    :name="fieldIdentificacaoFiscal.name"
+    type="number"
+    :value="dadosFormulario.identificacaoFiscal"
+    @emit-error="emit('emit-error', $event)"
+    @update:value="
+      emit('update:dados-formulario', {
+        ...dadosFormulario,
+        identificacaoFiscal: $event,
+      })
+    "
   />
-  <FieldText
+  <TextField
+    required
+    :label="fieldData.label"
+    :name="fieldData.name"
+    :value="dadosFormulario.data"
+    type="date"
+    @emit-error="emit('emit-error', $event)"
+    @update:value="
+      emit('update:dados-formulario', { ...dadosFormulario, data: $event })
+    "
+  />
+  <TextField
+    required
     label="Telefone"
     name="telefone"
-    :value="formData.telefone"
-    @update:value="emit('update:form-data', { ...formData, telefone: $event })"
+    type="number"
+    :value="dadosFormulario.telefone"
+    @emit-error="emit('emit-error', $event)"
+    @update:value="
+      emit('update:dados-formulario', { ...dadosFormulario, telefone: $event })
+    "
   />
 </template>
 
 <script setup>
-import FieldText from '../../../components/TextField.vue';
+import { TextField } from '../../../components/';
 
-const emit = defineEmits(['update:form-data']);
+const emit = defineEmits(['update:dados-formulario', 'emit-error']);
 
 const props = defineProps({
-  formData: {
+  dadosFormulario: {
     type: Object,
   },
   isPessoaFisica: Boolean,
 });
 
-const nome = {
+const fieldNome = {
     label: props.isPessoaFisica ? 'Nome' : 'Razão Social',
     name: props.isPessoaFisica ? 'nome' : 'razao-social',
   },
-  identificacaoFiscal = {
+  fieldIdentificacaoFiscal = {
     label: props.isPessoaFisica ? 'CPF' : 'CNPJ',
     name: props.isPessoaFisica ? 'cpf' : 'cnpj',
   },
-  data = {
+  fieldData = {
     label: props.isPessoaFisica ? 'Data de nascimento' : 'Data de abertura',
     name: props.isPessoaFisica ? 'data-nascimento' : 'data-abertura',
   };

@@ -1,19 +1,23 @@
 <template>
-  <FieldText
+  <TextField
+    required
     label="Sua senha"
     type="password"
     name="senha"
-    :value="formData.senha"
-    @update:value="emit('update:form-data', { ...formData, senha: $event })"
+    :value="dadosFormulario.senha"
+    @emit-error="emit('emit-error', $event)"
+    @update:value="
+      emit('update:dados-formulario', { ...dadosFormulario, senha: $event })
+    "
   />
 </template>
 
 <script setup>
-import FieldText from '../../../components/TextField.vue';
+import { TextField } from '../../../components/';
 
-const emit = defineEmits(['update:form-data']);
+const emit = defineEmits(['update:dados-formulario', 'emit-error']);
 defineProps({
-  formData: {
+  dadosFormulario: {
     type: Object,
   },
 });

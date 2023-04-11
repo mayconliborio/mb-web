@@ -1,44 +1,50 @@
 <template>
-  <FieldText
+  <TextField
     label="Endereço de e-mail"
     name="email"
-    :value="formData.email"
-    @update:value="emit('update:form-data', { ...formData, email: $event })"
+    required
+    :value="dadosFormulario.email"
+    @emit-error="emit('emit-error', $event)"
+    @update:value="
+      emit('update:dados-formulario', { ...dadosFormulario, email: $event })
+    "
   />
   <div class="form-row">
     <FieldRadioButton
-      v-for="(option, index) in options"
-      :key="index"
-      :id="`option-${index + 1}`"
-      :checked="formData.tipoPessoa === option.value"
+      v-for="option in options"
+      :key="`option-${option.label}-${option.value}`"
+      :id="`option-${option.value}`"
+      :checked="dadosFormulario.tipoPessoa === option.value"
       :label="option.label"
       :value="option.value"
       name="pessoa"
-      @update:value="updateFormData($event)"
+      @update:value="updateDadosFormulario($event)"
     />
   </div>
 </template>
 
 <script setup>
-import FieldText from '../../../components/TextField.vue';
-import FieldRadioButton from '../../../components/RadioButton.vue';
+import { TextField, FieldRadioButton } from '../../../components/';
+
+const emit = defineEmits(['update:dados-formulario', 'emit-error']);
 
 const props = defineProps({
-  formData: {
+  dadosFormulario: {
     type: Object,
   },
   options: {
-    type: Array,
+    type: Object,
   },
 });
 
-function updateFormData(data) {
-  let newFormData = { ...props.formData, tipoPessoa: data.value };
+function updateDadosFormulario(data) {
+  let newDadosFormulario = {
+    ...props.dadosFormulario,
+    tipoPessoa: data.value,
+  };
 
-  emit('update:form-data', newFormData);
+  emit('update:dados-formulario', newDadosFormulario);
 }
-
-const emit = defineEmits(['update:form-data']);
 </script>
 
 <style scoped></style>

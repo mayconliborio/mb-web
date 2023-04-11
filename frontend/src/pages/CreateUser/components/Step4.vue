@@ -1,29 +1,34 @@
 <template>
-  <FieldText
+  <TextField
+    required
     label="E-mail"
     name="email"
-    :value="formData.email"
-    @update:value="emit('update:form-data', { ...formData, email: $event })"
+    :value="dadosFormulario.email"
+    @emit-error="emit('emit-error', $event)"
+    @update:value="
+      emit('update:dados-formulario', { ...dadosFormulario, email: $event })
+    "
   />
   <Step2
-    :form-data="formData"
-    @update:form-data="emit('update:form-data', $event)"
+    :dados-formulario="dadosFormulario"
+    @emit-error="emit('emit-error', $event)"
+    @update:dados-formulario="emit('update:dados-formulario', $event)"
   />
   <Step3
-    :form-data="formData"
-    @update:form-data="emit('update:form-data', $event)"
+    :dados-formulario="dadosFormulario"
+    @emit-error="emit('emit-error', $event)"
+    @update:dados-formulario="emit('update:dados-formulario', $event)"
   />
 </template>
 
 <script setup>
-import Step2 from './Step2.vue';
-import Step3 from './Step3.vue';
-import FieldText from '../../../components/TextField.vue';
+import { Step2, Step3 } from './';
+import { TextField } from '../../../components/';
 
-const emit = defineEmits(['update:form-data']);
+const emit = defineEmits(['update:dados-formulario', 'emit-error']);
 
 defineProps({
-  formData: {
+  dadosFormulario: {
     type: Object,
   },
 });
