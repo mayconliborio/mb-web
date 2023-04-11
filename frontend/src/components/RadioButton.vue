@@ -57,7 +57,7 @@ label {
   display: inline-block;
   text-align: center;
   position: relative;
-  padding-left: 28px;
+  padding-left: 20px;
   margin-right: 16px;
   font-size: 16px;
   line-height: 24px;
@@ -71,8 +71,8 @@ label:before {
   width: 12px;
   height: 12px;
   position: absolute;
-  left: 1px;
-  bottom: 2px;
+  left: 0;
+  bottom: 6px;
   background-color: #fff;
   border: 1px solid rgba(1, 1, 1, 1);
   border-radius: 50%;
@@ -84,8 +84,8 @@ label.checked:before {
   width: 13px;
   height: 13px;
   position: absolute;
-  left: 1px;
-  bottom: 2px;
+  left: 0;
+  bottom: 6px;
   background-color: orange;
   border-radius: 50%;
 }
