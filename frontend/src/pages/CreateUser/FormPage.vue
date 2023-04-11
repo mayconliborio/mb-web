@@ -28,6 +28,7 @@
         <Step2
           v-if="currentStepIndex === 1"
           :dados-formulario="dadosFormulario"
+          :is-pessoa-fisica="isPessoaFisica"
           @emit-error="errorManager($event)"
           @update:dados-formulario="updateDadosFormulario($event)"
         />
@@ -79,11 +80,11 @@ const stepHeaders = computed(() => [
 const options = ref({
   fisica: {
     label: 'Pessoa Física',
-    value: PESSOA_JURIDICA,
+    value: PESSOA_FISICA,
   },
   juridica: {
     label: 'Pessoa Jurídica',
-    value: PESSOA_FISICA,
+    value: PESSOA_JURIDICA,
   },
 });
 
