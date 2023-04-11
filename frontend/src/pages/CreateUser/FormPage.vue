@@ -4,8 +4,8 @@
       <div class="stepper">
         <div
           v-for="(step, index) in stepHeaders"
-          :key="`step-${index}`"
           v-show="currentStepIndex === index"
+          :key="`step-${index}`"
         >
           <p>
             Etapa <span style="color: orange"> {{ index + 1 }}</span> de
@@ -54,7 +54,7 @@
       <DefaultButton
         type="primary"
         :disabled="(!hasSelectedPessoa && isFirstStep) || errors.length > 0"
-        @click="isLastStep ? submitForm() : goToNextStep()"
+        @click="isLastStep ? registerUser() : goToNextStep()"
       >
         {{ isLastStep ? 'Cadastrar' : 'Continuar' }}
       </DefaultButton>
@@ -66,6 +66,7 @@
 import { computed, ref } from 'vue';
 import { Step1, Step2, Step3, Step4 } from './components/';
 import { DefaultButton } from '../../components/';
+import axios from 'axios';
 const PESSOA_FISICA = 'fisica',
   PESSOA_JURIDICA = 'juridica';
 
@@ -93,10 +94,11 @@ const dadosFormulario = ref({
   tipoPessoa: '',
   nome: '',
   identificacaoFiscal: '',
-  data: '',
+  dataRegistro: '',
   telefone: '',
   senha: '',
 });
+
 const isPessoaFisica = computed(() => {
   return dadosFormulario.value.tipoPessoa === PESSOA_FISICA;
 });
@@ -126,65 +128,31 @@ function goToNextStep() {
   }
 }
 
-function createTipoPessoa() {
-  const {
-    nome,
-    data,
-    identificacaoFiscal,
-    telefone,
-    email,
-    senha,
-    tipoPessoa,
-  } = dadosFormulario.value;
-  const pessoa = {
-    email,
-    telefone,
-    senha,
-  };
-
-  switch (tipoPessoa) {
-    case PESSOA_FISICA: {
-      pessoa.nome = nome;
-      pessoa.cpf = identificacaoFiscal;
-      pessoa.dataNascimento = data;
-      break;
-    }
-    case PESSOA_JURIDICA: {
-      pessoa.razaoSocial = nome;
-      pessoa.cnpj = identificacaoFiscal;
-      pessoa.dataAbertura = data;
-      break;
-    }
-    default:
-      return {};
+async function registerUser() {
+  try {
+    await axios.post(
+      'http://localhost:3000/registration',
+      dadosFormulario.value
+    );
+    resetDadosFormulario();
+    currentStepIndex.value = 0;
+    // sucesso no cadastro
+  } catch (error) {
+    console.error(error);
+    // erro no cadastro
   }
-
-  return pessoa;
 }
 
-function submitForm() {
-  let pessoa = createTipoPessoa();
-
-  console.log(pessoa);
-
-  if (isPessoaFisica.value) {
-    //cadastrar pessoa fisica
-  }
-  if (isPessoaJuridica.value) {
-    //cadastrar pessoa juridica
-  }
-
+function resetDadosFormulario() {
   dadosFormulario.value = {
     email: '',
     tipoPessoa: '',
     nome: '',
     identificacaoFiscal: '',
-    data: '',
+    dataRegistro: '',
     telefone: '',
     senha: '',
   };
-
-  currentStepIndex.value = 0;
 }
 
 function updateDadosFormulario(data) {

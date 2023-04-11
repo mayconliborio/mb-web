@@ -13,7 +13,6 @@
     required
     :label="fieldIdentificacaoFiscal.label"
     :name="fieldIdentificacaoFiscal.name"
-    type="number"
     :value="dadosFormulario.identificacaoFiscal"
     @emit-error="emit('emit-error', $event)"
     @update:value="
@@ -27,18 +26,20 @@
     required
     :label="fieldData.label"
     :name="fieldData.name"
-    :value="dadosFormulario.data"
+    :value="dadosFormulario.dataRegistro"
     type="date"
     @emit-error="emit('emit-error', $event)"
     @update:value="
-      emit('update:dados-formulario', { ...dadosFormulario, data: $event })
+      emit('update:dados-formulario', {
+        ...dadosFormulario,
+        dataRegistro: $event,
+      })
     "
   />
   <TextField
     required
     label="Telefone"
     name="telefone"
-    type="number"
     :value="dadosFormulario.telefone"
     @emit-error="emit('emit-error', $event)"
     @update:value="
@@ -55,6 +56,7 @@ const emit = defineEmits(['update:dados-formulario', 'emit-error']);
 const props = defineProps({
   dadosFormulario: {
     type: Object,
+    default: () => ({}),
   },
   isPessoaFisica: Boolean,
 });
