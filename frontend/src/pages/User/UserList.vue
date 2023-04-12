@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <div class="page__header">
-      <h1>Usuários Cadastrados</h1>
+      <PageHeader title="Usuários Cadastrados" />
     </div>
     <div class="page__content">
       <DefaultLoading v-if="loading" />
@@ -18,9 +18,9 @@
 
 <script setup>
 import { onMounted, ref } from 'vue';
-import CardUser from './components/CardUser.vue';
+import { CardUser } from './components/';
+import { DefaultLoading, PageHeader } from '../../components/';
 import axios from 'axios';
-import DefaultLoading from '../../components/DefaultLoading.vue';
 
 const loading = ref(false);
 

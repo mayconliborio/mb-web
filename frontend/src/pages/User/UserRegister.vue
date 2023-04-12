@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <header class="page__header">
-      <h1 style="margin-bottom: 50px; font-size: 30px">Cadastro de Usuário</h1>
+      <PageHeader title="Cadastro de Usuário"></PageHeader>
       <div class="stepper">
         <div
           v-for="(step, index) in stepHeaders"
@@ -68,11 +68,10 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { Step1, Step2, Step3, Step4 } from './components/';
-import { DefaultButton } from '../../components/';
-import axios from 'axios';
-import DefaultLoading from '../../components/DefaultLoading.vue';
+import { DefaultButton, DefaultLoading, PageHeader } from '../../components/';
 import { formatDate } from '../../composables/date.js';
 import { useSnackbarStore } from '../../store/snackbar';
+import axios from 'axios';
 
 const snackbarStore = useSnackbarStore();
 
@@ -148,8 +147,6 @@ async function registerUser() {
     ...dadosFormulario.value,
     dataRegistro: formatDate(dadosFormulario.value.dataRegistro),
   };
-
-  console.log('aaa');
 
   await axios
     .post('http://localhost:3000/registration', payload)
