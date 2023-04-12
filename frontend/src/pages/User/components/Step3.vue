@@ -19,6 +19,7 @@ const emit = defineEmits(['update:dados-formulario', 'emit-error']);
 defineProps({
   dadosFormulario: {
     type: Object,
+    default: () => {},
   },
 });
 </script>

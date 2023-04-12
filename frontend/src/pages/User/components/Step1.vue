@@ -31,9 +31,11 @@ const emit = defineEmits(['update:dados-formulario', 'emit-error']);
 const props = defineProps({
   dadosFormulario: {
     type: Object,
+    default: () => {},
   },
   options: {
     type: Object,
+    default: () => {},
   },
 });
 
