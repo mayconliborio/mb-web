@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import { CardRow } from '../../../components/index.js';
+import { CardRow } from './';
 import { computed } from 'vue';
 const props = defineProps({
   user: {
