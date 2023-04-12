@@ -7,12 +7,13 @@
       :type="type"
       @input="$emit('update:value', $event.target.value)"
     />
-    <span class="error-message" v-show="errorMessage"> {{ errorMessage }}</span>
+    <span v-show="errorMessage" class="error-message"> {{ errorMessage }}</span>
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref, watch } from 'vue';
+import { validateDate } from '../composables/date.js';
 
 const emit = defineEmits(['emit-error', 'update:value']);
 
@@ -26,11 +27,16 @@ const props = defineProps({
     required: true,
   },
   value: {
-    type: [String, Number],
+    type: String || Number,
+    default: '',
   },
-  label: String,
+  label: {
+    type: String,
+    default: '',
+  },
   validator: {
     type: Function,
+    default: () => {},
   },
   type: {
     type: String,
@@ -72,6 +78,16 @@ watch(internValue, (newValue) => {
 //ao montar o componente carregamos com o valor pre alocado e se required iniciamos a validação
 onMounted(() => {
   internValue.value = props.value;
+
+  if (props.type === 'date') {
+    const input = document.getElementById(props.name);
+
+    if (input)
+      input.addEventListener('input', () => {
+        errorMessage.value = validateDate(input.value);
+        emitError();
+      });
+  }
 
   if (props.required && internValue.value.length === 0) {
     errorMessage.value = 'Campo obrigatório!';
