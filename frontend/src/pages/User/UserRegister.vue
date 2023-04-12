@@ -1,6 +1,7 @@
 <template>
   <div class="page">
     <header class="page__header">
+      <h1 style="margin-bottom: 50px; font-size: 30px">Cadastro de Usuário</h1>
       <div class="stepper">
         <div
           v-for="(step, index) in stepHeaders"
@@ -17,7 +18,9 @@
     </header>
 
     <section class="page__content">
-      <form>
+      <DefaultLoading v-if="loading"></DefaultLoading>
+
+      <form v-else>
         <Step1
           v-if="currentStepIndex === 0"
           :options="options"
@@ -67,9 +70,15 @@ import { computed, ref } from 'vue';
 import { Step1, Step2, Step3, Step4 } from './components/';
 import { DefaultButton } from '../../components/';
 import axios from 'axios';
+import DefaultLoading from '../../components/DefaultLoading.vue';
+import { formatDate } from '../../composables/date.js';
+import { useSnackbarStore } from '../../store/snackbar';
+
+const snackbarStore = useSnackbarStore();
+
 const PESSOA_FISICA = 'fisica',
   PESSOA_JURIDICA = 'juridica';
-
+const loading = ref(false);
 const currentStepIndex = ref(0);
 const errors = ref([]);
 const stepHeaders = computed(() => [
@@ -128,19 +137,33 @@ function goToNextStep() {
   }
 }
 
+function callSnackBar(message, type) {
+  snackbarStore.showSnackbar({ message, type });
+}
+
 async function registerUser() {
-  try {
-    await axios.post(
-      'http://localhost:3000/registration',
-      dadosFormulario.value
-    );
-    resetDadosFormulario();
-    currentStepIndex.value = 0;
-    // sucesso no cadastro
-  } catch (error) {
-    console.error(error);
-    // erro no cadastro
-  }
+  loading.value = true;
+
+  const payload = {
+    ...dadosFormulario.value,
+    dataRegistro: formatDate(dadosFormulario.value.dataRegistro),
+  };
+
+  console.log('aaa');
+
+  await axios
+    .post('http://localhost:3000/registration', payload)
+    .then(() => {
+      resetDadosFormulario();
+      currentStepIndex.value = 0;
+      callSnackBar('Usuário cadastrado com sucesso!', 'success');
+    })
+    .catch((e) => {
+      callSnackBar(e.toString(), 'error');
+    })
+    .finally(() => {
+      loading.value = false;
+    });
 }
 
 function resetDadosFormulario() {
@@ -176,7 +199,7 @@ function errorManager(error) {
     errors.value[errorIndex].message = error.message;
   }
 
-  //se não existe uma mensagem de erro mas temos um erro anterior do mesmo ID, removemos ele
+  //se não existe uma mensagem de erro, mas temos um erro anterior do mesmo ID, removemos ele
   if (!hasNewError && errorIndex >= 0) {
     errors.value.splice(errorIndex, 1);
   }
@@ -184,14 +207,10 @@ function errorManager(error) {
 </script>
 
 <style scoped>
-.solo-button {
-  display: flex;
-  flex-direction: column;
-  align-items: end;
-}
 .page {
   margin: 50px 0 0 0;
   min-width: 300px;
+  max-width: 500px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -203,5 +222,10 @@ function errorManager(error) {
 .page__footer,
 .page__content {
   margin-top: 20px;
+}
+.solo-button {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
 }
 </style>
