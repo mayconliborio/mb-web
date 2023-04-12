@@ -12,8 +12,8 @@
   <div class="form-row">
     <FieldRadioButton
       v-for="option in options"
-      :key="`option-${option.label}-${option.value}`"
       :id="`option-${option.value}`"
+      :key="`option-${option.label}-${option.value}`"
       :checked="dadosFormulario.tipoPessoa === option.value"
       :label="option.label"
       :value="option.value"
