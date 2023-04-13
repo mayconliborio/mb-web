@@ -110,7 +110,7 @@ const steps = computed(() => {
       component: Step3,
     },
     {
-      header: 'Senha de acesso',
+      header: 'Revise suas informações',
       component: Step4,
     },
   ];
