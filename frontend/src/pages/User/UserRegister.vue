@@ -3,47 +3,33 @@
     <header class="page__header">
       <PageHeader title="Cadastro de Usuário"></PageHeader>
       <div class="stepper">
+        <!-- Renderizamos os titulos dos steps aqui -->
         <div
-          v-for="(step, index) in stepHeaders"
+          v-for="(step, index) in steps"
           v-show="currentStepIndex === index"
           :key="`step-${index}`"
         >
           <p>
             Etapa <span class="primary-color"> {{ index + 1 }}</span> de
-            {{ stepHeaders.length }}
+            {{ steps.length }}
           </p>
-          <h2>{{ step }}</h2>
+          <h2>{{ step.header }}</h2>
         </div>
       </div>
     </header>
 
     <section class="page__content">
       <form>
-        <Step1
-          v-if="currentStepIndex === 0"
-          :options="options"
-          :dados-formulario="dadosFormulario"
-          @emit-error="errorManager($event)"
-          @update:dados-formulario="updateDadosFormulario($event)"
-        />
-        <Step2
-          v-if="currentStepIndex === 1"
-          :dados-formulario="dadosFormulario"
-          @emit-error="errorManager($event)"
-          @update:dados-formulario="updateDadosFormulario($event)"
-        />
-        <Step3
-          v-if="currentStepIndex === 2"
-          :dados-formulario="dadosFormulario"
-          @emit-error="errorManager($event)"
-          @update:dados-formulario="updateDadosFormulario($event)"
-        />
-        <Step4
-          v-if="currentStepIndex === 3"
-          :dados-formulario="dadosFormulario"
-          @emit-error="errorManager($event)"
-          @update:dados-formulario="updateDadosFormulario($event)"
-        />
+        <!-- Renderizamos os steps aqui -->
+        <div v-for="(step, index) in steps" :key="`step-${index}`">
+          <component
+            :is="step?.component"
+            v-if="step?.component && index === currentStepIndex"
+            :dados-formulario="dadosFormulario"
+            @emit-error="errorManager($event)"
+            @update:dados-formulario="updateDadosFormulario($event)"
+          ></component>
+        </div>
       </form>
     </section>
 
@@ -63,18 +49,19 @@
         />
       </div>
 
+      <!-- God Mode pra preencher todos os dados -->
       <div v-if="isFirstStep" class="god-mode-box">
         <h3 class="god-mode-header red-color">God Mode</h3>
         <div class="button-row">
           <DefaultButton
             text="Preencher CPF"
             color="red"
-            :action="() => setMockData(PESSOA_FISICA)"
+            :action="() => setMockedData(PESSOA_FISICA)"
           />
           <DefaultButton
             text="Preencher CNPJ"
             color="red"
-            :action="() => setMockData(PESSOA_JURIDICA)"
+            :action="() => setMockedData(PESSOA_JURIDICA)"
           />
         </div>
       </div>
@@ -87,28 +74,16 @@ import { computed, ref } from 'vue';
 import { Step1, Step2, Step3, Step4 } from './components/';
 import { DefaultButton, PageHeader } from '../../components/';
 import { formatDate } from '../../composables/date.js';
-import { useSnackbarStore } from '../../store/snackbar';
 import axios from 'axios';
 import { MOCK_CPF, MOCK_CNPJ } from './mock/formData.js';
+import { PESSOA_FISICA, PESSOA_JURIDICA } from './utils/sharedData.js';
 
-const PESSOA_FISICA = 'fisica',
-  PESSOA_JURIDICA = 'juridica';
+import { useSnackbarStore } from '../../store/snackbar';
 
 const snackbarStore = useSnackbarStore();
 
 const currentStepIndex = ref(0);
 const errors = ref([]);
-
-const options = ref({
-  fisica: {
-    label: 'Pessoa Física',
-    value: PESSOA_FISICA,
-  },
-  juridica: {
-    label: 'Pessoa Jurídica',
-    value: PESSOA_JURIDICA,
-  },
-});
 
 const dadosFormulario = ref({
   email: '',
@@ -120,12 +95,26 @@ const dadosFormulario = ref({
   senha: '',
 });
 
-const stepHeaders = computed(() => [
-  'Seja bem vindo(a)',
-  `Pessoa ${isPessoaFisica.value ? 'Física' : 'Jurídica'}`,
-  'Senha de acesso',
-  'Revise suas informações',
-]);
+const steps = computed(() => {
+  return [
+    {
+      header: 'Seja bem vindo(a)',
+      component: Step1,
+    },
+    {
+      header: `Pessoa ${isPessoaFisica.value ? 'Física' : 'Jurídica'}`,
+      component: Step2,
+    },
+    {
+      header: 'Senha de acesso',
+      component: Step3,
+    },
+    {
+      header: 'Senha de acesso',
+      component: Step4,
+    },
+  ];
+});
 
 const isPessoaFisica = computed(() => {
   return dadosFormulario.value.tipoPessoa === PESSOA_FISICA;
@@ -139,7 +128,7 @@ const hasSelectedPessoa = computed(() => {
   return isPessoaJuridica.value || isPessoaFisica.value;
 });
 
-const lastStepIndex = computed(() => stepHeaders.value.length - 1);
+const lastStepIndex = computed(() => steps.value.length - 1);
 
 const isFirstStep = computed(() => {
   return currentStepIndex.value === 0;
@@ -162,7 +151,7 @@ function goToNextStep() {
   }
 }
 
-function callSnackBar(message, type) {
+function showMessageSnackBar(message, type) {
   snackbarStore.showSnackbar({ message, type });
 }
 
@@ -177,14 +166,23 @@ async function registerUser() {
     .then(() => {
       resetDadosFormulario();
       currentStepIndex.value = 0;
-      callSnackBar('Usuário cadastrado com sucesso!', 'success');
+      showMessageSnackBar('Usuário cadastrado com sucesso!', 'success');
     })
     .catch((e) => {
-      callSnackBar(e.toString(), 'error');
+      const data = e?.response?.data;
+      let message = 'Falha ao cadastrar usuário',
+        status = 'error';
+
+      if (data) {
+        message = data.message;
+        status = data.status;
+      }
+
+      showMessageSnackBar(message, status);
     });
 }
 
-function setMockData(mockOption) {
+function setMockedData(mockOption) {
   switch (mockOption) {
     case PESSOA_FISICA: {
       dadosFormulario.value = MOCK_CPF;
@@ -218,25 +216,28 @@ function updateDadosFormulario(data) {
   dadosFormulario.value = data;
 }
 
-//Sempre que um campo é alterado um erro é emitido e gerenciado por essa função
+//Sempre que um componente input é alterado um "erro" é emitido e gerenciado por essa função
+//O erro pode valido se tiver uma mensagem valida ou invalido se não tiver mensagem
+// ex: valido    -   {id: 1, message: 'Mensagem de erro'}
+// ex: invalido  -   {id: 1, message: ''}
 function errorManager(error) {
-  //se o erro já foi registrado o encontramos aqui
+  //se o input já tem um erro anterior cadastrado, encontramos aqui pelo seu id
   let errorIndex = errors.value.findIndex((e) => e.id === error.id);
-  //se existe uma mensagem de erro salvamos aqui
-  let hasNewError = error.message.length > 0;
 
-  //se existe uma mensagem de erro e ainda não registramos aquele id, o registramos aqui
-  if (errorIndex < 0 && hasNewError) {
+  let isValidError = error.message.length > 0;
+
+  //se o erro é valido e ainda não temos registro de erro do ID informado incluimos ele aqui
+  if (errorIndex < 0 && isValidError) {
     errors.value.push(error);
   }
 
-  //se o id ja foi cadastrado, substituimos a mensagem de erro
-  if (errorIndex >= 0 && hasNewError) {
+  //se o erro é valido e já tinhamos um registro de erro para esse id, substituimos a mensagem de erro
+  if (errorIndex >= 0 && isValidError) {
     errors.value[errorIndex].message = error.message;
   }
 
-  //se não existe uma mensagem de erro, mas temos um erro anterior do mesmo ID, removemos ele
-  if (!hasNewError && errorIndex >= 0) {
+  //se o erro é invalido e o input tinha um erro anterior, removemos ele do nosso array de erros
+  if (!isValidError && errorIndex >= 0) {
     errors.value.splice(errorIndex, 1);
   }
 }

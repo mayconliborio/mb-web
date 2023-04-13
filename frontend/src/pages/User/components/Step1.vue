@@ -25,6 +25,8 @@
 
 <script setup>
 import { TextField, FieldRadioButton } from '../../../components/';
+import { ref } from 'vue';
+import { PESSOA_FISICA, PESSOA_JURIDICA } from '../utils/sharedData.js';
 
 const emit = defineEmits(['update:dados-formulario', 'emit-error']);
 
@@ -33,9 +35,16 @@ const props = defineProps({
     type: Object,
     default: () => {},
   },
-  options: {
-    type: Object,
-    default: () => {},
+});
+
+const options = ref({
+  fisica: {
+    label: 'Pessoa Física',
+    value: PESSOA_FISICA,
+  },
+  juridica: {
+    label: 'Pessoa Jurídica',
+    value: PESSOA_JURIDICA,
   },
 });
 
