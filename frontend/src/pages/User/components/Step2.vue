@@ -1,5 +1,5 @@
 <template>
-  <TextField
+  <InputField
     required
     :label="fieldNome.label"
     :name="fieldNome.name"
@@ -9,7 +9,7 @@
       emit('update:dados-formulario', { ...dadosFormulario, nome: $event })
     "
   />
-  <TextField
+  <InputField
     required
     :label="fieldIdentificacaoFiscal.label"
     :name="fieldIdentificacaoFiscal.name"
@@ -22,7 +22,7 @@
       })
     "
   />
-  <TextField
+  <InputField
     required
     :label="fieldData.label"
     :name="fieldData.name"
@@ -36,7 +36,7 @@
       })
     "
   />
-  <TextField
+  <InputField
     required
     label="Telefone"
     name="telefone"
@@ -49,7 +49,7 @@
 </template>
 
 <script setup>
-import { TextField } from '../../../components/';
+import { InputField } from '../../../components/';
 import { computed } from 'vue';
 
 const emit = defineEmits(['update:dados-formulario', 'emit-error']);

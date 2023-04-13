@@ -1,5 +1,5 @@
 <template>
-  <TextField
+  <InputField
     label="Endereço de e-mail"
     name="email"
     required
@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { TextField, FieldRadioButton } from '../../../components/';
+import { InputField, FieldRadioButton } from '../../../components/';
 import { ref } from 'vue';
 import { PESSOA_FISICA, PESSOA_JURIDICA } from '../utils/sharedData.js';
 

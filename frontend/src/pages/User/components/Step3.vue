@@ -1,5 +1,5 @@
 <template>
-  <TextField
+  <InputField
     required
     label="Sua senha"
     type="password"
@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import { TextField } from '../../../components/';
+import { InputField } from '../../../components/';
 
 const emit = defineEmits(['update:dados-formulario', 'emit-error']);
 defineProps({

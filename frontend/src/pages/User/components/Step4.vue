@@ -1,5 +1,5 @@
 <template>
-  <TextField
+  <InputField
     required
     label="E-mail"
     name="email"
@@ -23,7 +23,7 @@
 
 <script setup>
 import { Step2, Step3 } from './';
-import { TextField } from '../../../components/';
+import { InputField } from '../../../components/';
 
 const emit = defineEmits(['update:dados-formulario', 'emit-error']);
 

@@ -5,6 +5,7 @@
       :id="name"
       v-model="internValue"
       :type="type"
+      :class="{ 'error-input': errorMessage }"
       @input="$emit('update:value', $event.target.value)"
     />
     <span v-show="errorMessage" class="error-message"> {{ errorMessage }}</span>
@@ -116,6 +117,10 @@ input {
   border: 1px solid black;
   border-radius: 6px;
   box-sizing: border-box;
+}
+
+.error-input {
+  border: 1px solid red;
 }
 
 .error-message {
