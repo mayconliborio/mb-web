@@ -7,7 +7,7 @@
     @click="handleClick()"
   >
     <DefaultLoading v-if="waitingAction" size="xs"></DefaultLoading>
-    <slot v-else> </slot>
+    <span v-else>{{ text }} </span>
   </button>
 </template>
 
@@ -24,9 +24,13 @@ const props = defineProps({
     type: String,
     default: 'button',
   },
+  text: {
+    type: String,
+    required: true,
+  },
   action: {
     type: Function,
-    required: true,
+    default: () => {},
   },
   disabled: Boolean,
 });
