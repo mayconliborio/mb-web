@@ -5,24 +5,33 @@
     </div>
     <div class="page__content">
       <DefaultLoading v-if="loading" />
-      <div v-else class="card-list">
+      <div v-if="!loading && hasUsers" class="card-list">
         <CardUser
           v-for="(user, index) in users"
           :key="`user-${index}`"
           :user="user"
         ></CardUser>
       </div>
+      <div v-if="!loading && !hasUsers" class="not-found-message">
+        <span>Nenhum usuário encontrado</span>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { CardUser } from './components/';
 import { DefaultLoading, PageHeader } from '../../components/';
 import axios from 'axios';
+import { useSnackbarStore } from '../../store/snackbar';
+
+const snackbarStore = useSnackbarStore();
 
 const loading = ref(false);
+const users = ref([]);
+
+const hasUsers = computed(() => users.value.length > 0);
 
 async function getAllUser() {
   loading.value = true;
@@ -31,13 +40,22 @@ async function getAllUser() {
     .then((res) => {
       users.value = res.data;
     })
-    .catch((e) => e)
+    .catch((e) => {
+      const data = e?.response?.data;
+      let message = 'Falha ao consultar usuários!',
+        status = 'error';
+
+      if (data) {
+        message = data.message;
+        status = data.status;
+      }
+
+      snackbarStore.showSnackbar({ message, type: status });
+    })
     .finally(() => {
       loading.value = false;
     });
 }
-
-const users = ref([]);
 
 onMounted(async () => {
   await getAllUser();
@@ -57,16 +75,20 @@ onMounted(async () => {
 
 .card-list {
   display: grid;
-  grid-template-columns: repeat(
-    auto-fill,
-    minmax(300px, 2fr)
-  ); /* 5 cards por linha */
-  gap: 20px; /* espaçamento entre os cards */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 2fr));
+  gap: 20px;
 }
 .page__header {
   margin-bottom: 20px;
 }
 .page__content {
   width: 80%;
+}
+
+.not-found-message {
+  width: 100%;
+  text-align: center;
+  color: rgba(20, 20, 20, 0.7);
+  font-size: 18px;
 }
 </style>
