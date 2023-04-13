@@ -50,6 +50,7 @@
 
 <script setup>
 import { TextField } from '../../../components/';
+import { computed } from 'vue';
 
 const emit = defineEmits(['update:dados-formulario', 'emit-error']);
 
@@ -58,19 +59,22 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
-  isPessoaFisica: Boolean,
 });
 
-const fieldNome = {
-    label: props.isPessoaFisica ? 'Nome' : 'Razão Social',
-    name: props.isPessoaFisica ? 'nome' : 'razao-social',
-  },
-  fieldIdentificacaoFiscal = {
-    label: props.isPessoaFisica ? 'CPF' : 'CNPJ',
-    name: props.isPessoaFisica ? 'cpf' : 'cnpj',
-  },
-  fieldData = {
-    label: props.isPessoaFisica ? 'Data de nascimento' : 'Data de abertura',
-    name: props.isPessoaFisica ? 'data-nascimento' : 'data-abertura',
-  };
+const isPessoaFisica = computed(
+  () => props.dadosFormulario.tipoPessoa === 'fisica'
+);
+
+const fieldNome = computed(() => ({
+  label: isPessoaFisica.value ? 'Nome' : 'Razão Social',
+  name: isPessoaFisica.value ? 'nome' : 'razao-social',
+}));
+const fieldIdentificacaoFiscal = computed(() => ({
+  label: isPessoaFisica.value ? 'CPF' : 'CNPJ',
+  name: isPessoaFisica.value ? 'cpf' : 'cnpj',
+}));
+const fieldData = computed(() => ({
+  label: isPessoaFisica.value ? 'Data de nascimento' : 'Data de abertura',
+  name: isPessoaFisica.value ? 'data-nascimento' : 'data-abertura',
+}));
 </script>

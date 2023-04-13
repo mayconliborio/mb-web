@@ -9,7 +9,7 @@
           :key="`step-${index}`"
         >
           <p>
-            Etapa <span style="color: orange"> {{ index + 1 }}</span> de
+            Etapa <span class="primary-color"> {{ index + 1 }}</span> de
             {{ stepHeaders.length }}
           </p>
           <h2>{{ step }}</h2>
@@ -29,7 +29,6 @@
         <Step2
           v-if="currentStepIndex === 1"
           :dados-formulario="dadosFormulario"
-          :is-pessoa-fisica="isPessoaFisica"
           @emit-error="errorManager($event)"
           @update:dados-formulario="updateDadosFormulario($event)"
         />
@@ -48,21 +47,37 @@
       </form>
     </section>
 
-    <footer class="page__footer" :class="{ 'solo-button': isFirstStep }">
-      <DefaultButton
-        v-if="!isFirstStep"
-        color="cancel"
-        :action="backToPrevStep"
-      >
-        Voltar
-      </DefaultButton>
-      <DefaultButton
-        color="primary"
-        :disabled="(!hasSelectedPessoa && isFirstStep) || errors.length > 0"
-        :action="isLastStep ? registerUser : goToNextStep"
-      >
-        {{ isLastStep ? 'Cadastrar' : 'Continuar' }}
-      </DefaultButton>
+    <footer class="page__footer">
+      <div class="button-row" :class="{ 'solo-button': isFirstStep }">
+        <DefaultButton
+          v-if="!isFirstStep"
+          color="cancel"
+          :action="backToPrevStep"
+          text="Voltar"
+        />
+        <DefaultButton
+          color="primary"
+          :disabled="(!hasSelectedPessoa && isFirstStep) || errors.length > 0"
+          :text="isLastStep ? 'Cadastrar' : 'Continuar'"
+          :action="isLastStep ? registerUser : goToNextStep"
+        />
+      </div>
+
+      <div v-if="isFirstStep" class="god-mode-box">
+        <h3 class="god-mode-header red-color">God Mode</h3>
+        <div class="button-row">
+          <DefaultButton
+            text="Preencher CPF"
+            color="red"
+            :action="() => setMockData(PESSOA_FISICA)"
+          />
+          <DefaultButton
+            text="Preencher CNPJ"
+            color="red"
+            :action="() => setMockData(PESSOA_JURIDICA)"
+          />
+        </div>
+      </div>
     </footer>
   </div>
 </template>
@@ -74,19 +89,16 @@ import { DefaultButton, PageHeader } from '../../components/';
 import { formatDate } from '../../composables/date.js';
 import { useSnackbarStore } from '../../store/snackbar';
 import axios from 'axios';
-
-const snackbarStore = useSnackbarStore();
+import { MOCK_CPF, MOCK_CNPJ } from './mock/formData.js';
 
 const PESSOA_FISICA = 'fisica',
   PESSOA_JURIDICA = 'juridica';
-const currentStepIndex = ref(3);
+
+const snackbarStore = useSnackbarStore();
+
+const currentStepIndex = ref(0);
 const errors = ref([]);
-const stepHeaders = computed(() => [
-  'Seja bem vindo(a)',
-  `Pessoa ${isPessoaFisica.value ? 'Física' : 'Jurídica'}`,
-  'Senha de acesso',
-  'Revise suas informações',
-]);
+
 const options = ref({
   fisica: {
     label: 'Pessoa Física',
@@ -99,39 +111,42 @@ const options = ref({
 });
 
 const dadosFormulario = ref({
-  email: '123123213',
-  tipoPessoa: '1231232131',
-  nome: '123123',
-  identificacaoFiscal: '123213213',
-  dataRegistro: '1999-07-13',
-  telefone: '131231212312',
-  senha: '123123123213',
+  email: '',
+  tipoPessoa: '',
+  nome: '',
+  identificacaoFiscal: '',
+  dataRegistro: '',
+  telefone: '',
+  senha: '',
 });
 
-// const dadosFormulario = ref({
-//   email: '',
-//   tipoPessoa: '',
-//   nome: '',
-//   identificacaoFiscal: '',
-//   dataRegistro: '',
-//   telefone: '',
-//   senha: '',
-// });
+const stepHeaders = computed(() => [
+  'Seja bem vindo(a)',
+  `Pessoa ${isPessoaFisica.value ? 'Física' : 'Jurídica'}`,
+  'Senha de acesso',
+  'Revise suas informações',
+]);
 
 const isPessoaFisica = computed(() => {
   return dadosFormulario.value.tipoPessoa === PESSOA_FISICA;
 });
+
 const isPessoaJuridica = computed(() => {
   return dadosFormulario.value.tipoPessoa === PESSOA_JURIDICA;
 });
+
 const hasSelectedPessoa = computed(() => {
   return isPessoaJuridica.value || isPessoaFisica.value;
 });
+
+const lastStepIndex = computed(() => stepHeaders.value.length - 1);
+
 const isFirstStep = computed(() => {
   return currentStepIndex.value === 0;
 });
+
 const isLastStep = computed(() => {
-  return currentStepIndex.value === stepHeaders.value.length - 1;
+  return currentStepIndex.value === lastStepIndex.value;
 });
 
 function backToPrevStep() {
@@ -167,6 +182,24 @@ async function registerUser() {
     .catch((e) => {
       callSnackBar(e.toString(), 'error');
     });
+}
+
+function setMockData(mockOption) {
+  switch (mockOption) {
+    case PESSOA_FISICA: {
+      dadosFormulario.value = MOCK_CPF;
+      currentStepIndex.value = lastStepIndex.value;
+      break;
+    }
+    case PESSOA_JURIDICA: {
+      dadosFormulario.value = MOCK_CNPJ;
+      currentStepIndex.value = lastStepIndex.value;
+      break;
+    }
+    default: {
+      resetDadosFormulario();
+    }
+  }
 }
 
 function resetDadosFormulario() {
@@ -211,24 +244,56 @@ function errorManager(error) {
 
 <style scoped>
 .page {
-  margin: 50px 0 0 0;
-  min-width: 300px;
-  max-width: 500px;
+  padding: 50px 0 20px 0;
+  min-width: 400px;
+  width: auto;
+  max-width: 700px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
+
 .page__footer {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
 }
+
 .page__footer,
 .page__content {
   margin-top: 20px;
 }
+
+.primary-color {
+  color: orange;
+}
+
+.red-color {
+  color: #772014;
+}
+
 .solo-button {
   display: flex;
   flex-direction: column;
   align-items: end;
+}
+
+.god-mode-box {
+  border-radius: 8px;
+  box-sizing: border-box;
+  padding: 20px 20px;
+  width: 100%;
+  min-width: 400px;
+  text-align: center;
+  margin-top: 200px;
+}
+
+.god-mode-header {
+  margin-bottom: 40px;
+}
+
+.button-row {
+  display: flex;
+  justify-content: space-between;
 }
 </style>
