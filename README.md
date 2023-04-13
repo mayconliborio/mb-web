@@ -10,7 +10,7 @@ Existem duas opções para executar o projeto, dependendo da sua preferência e 
 2. Abra o terminal e navegue até a pasta raiz do projeto.
 3. Execute o comando `docker-compose up`.
 4. Aguarde até que os contêineres sejam criados e inicializados.
-5. Abra o navegador e acesse a URL `http://localhost:4173` para acessar o aplicativo.
+5. Abra o navegador e acesse a URL `http://localhost:5173` para acessar o aplicativo.
 
 ### Opção 2: Instalação manual
 
