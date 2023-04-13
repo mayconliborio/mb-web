@@ -21,9 +21,10 @@ exports.registerUser = async (req, res) => {
       !dataRegistro ||
       !tipoPessoa
     ) {
-      return res
-        .status(400)
-        .json({ message: 'Todos os campos devem ser preenchidos.' })
+      return res.status(400).json({
+        message: 'Todos os campos devem ser preenchidos.',
+        status: 'warning',
+      })
     }
 
     await User.create({
@@ -35,9 +36,13 @@ exports.registerUser = async (req, res) => {
       dataRegistro,
       tipoPessoa,
     })
-    res.status(201).json({ message: 'Usuário criado com sucesso' })
+    res
+      .status(202)
+      .json({ message: 'Usuário criado com sucesso', status: 'success' })
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao salvar o usuário' })
+    res
+      .status(500)
+      .json({ message: 'Erro ao salvar o usuário', status: 'error' })
   }
 }
 
@@ -46,6 +51,8 @@ exports.getAllUsers = async (req, res) => {
     const users = await User.findAll()
     res.status(200).json(users)
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao obter lista de usuários' })
+    res
+      .status(500)
+      .json({ message: 'Erro ao obter lista de usuários', status: 'error' })
   }
 }
