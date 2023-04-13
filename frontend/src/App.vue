@@ -39,10 +39,12 @@ const pageContentRef = ref(null);
 const pageContentHeight = ref(0);
 const windowHeight = computed(() => window.innerHeight || 0);
 
-const isPageSmallWindow = computed(
-  () => pageContentHeight.value < windowHeight.value
-);
+const isPageSmallWindow = computed(() => {
+  //altura do header + footer
+  let templateHeight = 100;
 
+  return pageContentHeight.value < windowHeight.value - templateHeight;
+});
 onMounted(() => {
   const observer = new ResizeObserver((entries) => {
     for (let entry of entries) {
