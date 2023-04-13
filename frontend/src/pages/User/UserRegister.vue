@@ -244,7 +244,7 @@ function errorManager(error) {
 
 <style scoped>
 .page {
-  padding: 50px 0 20px 0;
+  padding: 20px 0;
   min-width: 400px;
   width: auto;
   max-width: 700px;
@@ -285,7 +285,7 @@ function errorManager(error) {
   width: 100%;
   min-width: 400px;
   text-align: center;
-  margin-top: 200px;
+  margin-top: 100px;
 }
 
 .god-mode-header {
