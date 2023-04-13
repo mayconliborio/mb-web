@@ -1,10 +1,17 @@
 <template>
   <div class="loading">
-    <div class="spinner"></div>
+    <div class="spinner" :class="size"></div>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+defineProps({
+  size: {
+    type: String,
+    default: 'm',
+  },
+});
+</script>
 
 <style scoped>
 .loading {
@@ -21,6 +28,16 @@
   width: 1.5em;
   height: 1.5em;
   animation: spin 1s linear infinite;
+}
+
+.xs {
+  width: 1em;
+  height: 1em;
+}
+
+.m {
+  width: 1.5em;
+  height: 1.5em;
 }
 
 @keyframes spin {

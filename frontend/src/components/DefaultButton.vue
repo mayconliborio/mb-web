@@ -1,26 +1,54 @@
 <template>
-  <button type="button" class="btn" :class="type" :disabled="disabled">
-    <slot> </slot>
+  <button
+    :type="type"
+    class="btn"
+    :class="color"
+    :disabled="disabled || waitingAction"
+    @click="handleClick()"
+  >
+    <DefaultLoading v-if="waitingAction" size="xs"></DefaultLoading>
+    <slot v-else> </slot>
   </button>
 </template>
 
 <script setup>
-defineProps({
-  type: {
+import { ref } from 'vue';
+import DefaultLoading from './DefaultLoading.vue';
+
+const props = defineProps({
+  color: {
     type: String,
     default: 'primary',
   },
+  type: {
+    type: String,
+    default: 'button',
+  },
+  action: {
+    type: Function,
+    required: true,
+  },
   disabled: Boolean,
 });
+const waitingAction = ref(false);
+
+async function handleClick() {
+  if (typeof props.action === 'function') {
+    waitingAction.value = true;
+    await props.action();
+    waitingAction.value = false;
+  }
+}
 </script>
 
 <style scoped>
 .btn {
-  border-radius: 4px;
+  border-radius: 6px;
+  line-height: 24px;
   width: 100%;
   min-width: 100px;
   max-width: 140px;
-  padding: 6px 8px;
+  padding: 2px 8px;
   font-size: 16px;
   border: 1px solid orange;
   cursor: pointer;

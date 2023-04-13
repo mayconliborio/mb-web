@@ -18,9 +18,7 @@
     </header>
 
     <section class="page__content">
-      <DefaultLoading v-if="loading"></DefaultLoading>
-
-      <form v-else>
+      <form>
         <Step1
           v-if="currentStepIndex === 0"
           :options="options"
@@ -51,13 +49,17 @@
     </section>
 
     <footer class="page__footer" :class="{ 'solo-button': isFirstStep }">
-      <DefaultButton v-if="!isFirstStep" type="cancel" @click="backToPrevStep">
+      <DefaultButton
+        v-if="!isFirstStep"
+        color="cancel"
+        :action="backToPrevStep"
+      >
         Voltar
       </DefaultButton>
       <DefaultButton
-        type="primary"
+        color="primary"
         :disabled="(!hasSelectedPessoa && isFirstStep) || errors.length > 0"
-        @click="isLastStep ? registerUser() : goToNextStep()"
+        :action="isLastStep ? registerUser : goToNextStep"
       >
         {{ isLastStep ? 'Cadastrar' : 'Continuar' }}
       </DefaultButton>
@@ -68,7 +70,7 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { Step1, Step2, Step3, Step4 } from './components/';
-import { DefaultButton, DefaultLoading, PageHeader } from '../../components/';
+import { DefaultButton, PageHeader } from '../../components/';
 import { formatDate } from '../../composables/date.js';
 import { useSnackbarStore } from '../../store/snackbar';
 import axios from 'axios';
@@ -77,8 +79,7 @@ const snackbarStore = useSnackbarStore();
 
 const PESSOA_FISICA = 'fisica',
   PESSOA_JURIDICA = 'juridica';
-const loading = ref(false);
-const currentStepIndex = ref(0);
+const currentStepIndex = ref(3);
 const errors = ref([]);
 const stepHeaders = computed(() => [
   'Seja bem vindo(a)',
@@ -98,14 +99,24 @@ const options = ref({
 });
 
 const dadosFormulario = ref({
-  email: '',
-  tipoPessoa: '',
-  nome: '',
-  identificacaoFiscal: '',
-  dataRegistro: '',
-  telefone: '',
-  senha: '',
+  email: '123123213',
+  tipoPessoa: '1231232131',
+  nome: '123123',
+  identificacaoFiscal: '123213213',
+  dataRegistro: '1999-07-13',
+  telefone: '131231212312',
+  senha: '123123123213',
 });
+
+// const dadosFormulario = ref({
+//   email: '',
+//   tipoPessoa: '',
+//   nome: '',
+//   identificacaoFiscal: '',
+//   dataRegistro: '',
+//   telefone: '',
+//   senha: '',
+// });
 
 const isPessoaFisica = computed(() => {
   return dadosFormulario.value.tipoPessoa === PESSOA_FISICA;
@@ -141,8 +152,6 @@ function callSnackBar(message, type) {
 }
 
 async function registerUser() {
-  loading.value = true;
-
   const payload = {
     ...dadosFormulario.value,
     dataRegistro: formatDate(dadosFormulario.value.dataRegistro),
@@ -157,9 +166,6 @@ async function registerUser() {
     })
     .catch((e) => {
       callSnackBar(e.toString(), 'error');
-    })
-    .finally(() => {
-      loading.value = false;
     });
 }
 
