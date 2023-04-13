@@ -81,6 +81,20 @@ async function handleClick() {
   background-color: #ff9933;
 }
 
+.red {
+  color: white;
+  background-color: #772014;
+  border: 1px solid #772014;
+}
+
+.red:hover {
+  background-color: #802014;
+}
+
+.red:active {
+  background-color: #702014;
+}
+
 .cancel {
   color: orange;
   background-color: white;
