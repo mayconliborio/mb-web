@@ -1,8 +1,6 @@
 <template>
-  <div v-if="show" class="snackbar-cover">
-    <div :class="['snackbar', type]">
-      {{ message }}
-    </div>
+  <div v-if="show" class="snackbar" :class="type">
+    {{ message }}
   </div>
 </template>
 
@@ -18,22 +16,42 @@ const type = computed(() => snackbarStore.type);
 </script>
 
 <style scoped>
-.snackbar-cover {
-  position: absolute;
-  top: 60px;
-  right: 50px;
-  justify-content: center;
-  z-index: 9999;
-}
 .snackbar {
+  position: absolute;
+  top: -200px;
+  right: 60px;
   width: auto;
-  max-width: 400px;
-  top: 20px;
+  max-width: 500px;
   padding: 10px;
-  border-radius: 4px;
+  border-radius: 8px;
   color: #fff;
   font-weight: bold;
-  transition: opacity 0.3s ease;
+  animation: upToDown 5s;
+  z-index: 9999;
+}
+
+@keyframes upToDown {
+  0% {
+    top: -200px;
+  }
+  10% {
+    top: 64px;
+  }
+  15% {
+    top: 56px;
+  }
+  20% {
+    top: 60px;
+  }
+  80% {
+    top: 60px;
+  }
+  90% {
+    top: 64px;
+  }
+  100% {
+    top: -200px;
+  }
 }
 
 .success {

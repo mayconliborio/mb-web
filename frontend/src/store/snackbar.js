@@ -21,7 +21,7 @@ export const useSnackbarStore = defineStore({
       this.timeoutId = setTimeout(() => {
         this.show = false;
         this.timeoutId = null;
-      }, 3000);
+      }, 5000);
     },
   },
 });
