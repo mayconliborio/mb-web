@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>MB - WEB</title>
+    <style>
+        .margin-20 {
+            margin: 20px;
+        }
+        .row {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+<h1 class="titulo"></h1>
+<form action="/registration" method="post" id="myForm">
+    <div>
+
+        <div class="margin-20">
+            <label for="email">Email:</label>
+            <input type="text" id="email" class="input" name="email" required>
+        </div>
+
+
+        <div class="margin-20">
+            <label for="tipoPessoa">Tipo de Pessoa:</label>
+            <div class="row">
+            <div>
+                <input type="radio" id="radio-fisica" name="tipoPessoa" value="fisica" checked>
+                <label for="radio-fisica">Pessoa Física</label>
+            </div>
+            <div>
+                <input type="radio" id="radio-juridica" name="tipoPessoa" value="juridica">
+                <label for="radio-juridica">Pessoa Jurídica</label>
+            </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="margin-20">
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome" class="input" name="nome" required>
+            </div>
+            <div class="margin-20">
+                <label id="label-identificacao" for="identificacaoFiscal">CPF:</label>
+                <input type="text" id="identificacaoFiscal" name="identificacaoFiscal" required>
+            </div>
+            <div class="margin-20">
+                <label id="label-data-registro" for="dataRegistro">Data de Nascimento:</label>
+                <input type="text" id="dataRegistro" name="dataRegistro" placeholder="DD/MM/AAAA" required>
+            </div>
+            <div class="margin-20">
+                <label for="telefone">Telefone:</label>
+                <input type="text" id="telefone" name="telefone" required>
+            </div>
+            <div class="margin-20">
+                <label for="senha">Senha:</label>
+                <input type="password" id="senha" name="senha" required>
+            </div>
+
+            <button type="submit">Cadastrar</button>
+
+        </div>
+    </div>
+</form>
+<script>
+    const form = document.getElementById('myForm')
+    const radioFisica = document.getElementById('radio-fisica');
+    const radioJuridica = document.getElementById('radio-juridica');
+    const labelIdentificacao = document.getElementById('label-identificacao');
+    const labelDataRegistro = document.getElementById('label-data-registro');
+
+    radioFisica.addEventListener('click', () => {
+        labelIdentificacao.textContent = 'CPF:';
+        labelDataRegistro.textContent = 'Data de Nascimento';
+    });
+
+    radioJuridica.addEventListener('click', () => {
+        labelIdentificacao.textContent = 'CNPJ:';
+        labelDataRegistro.textContent = 'Data de Abertura';
+    });
+
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(form);
+        const data = {};
+
+        for (const [key, value] of formData.entries()) {
+            data[key] = value;
+        }
+
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        };
+
+        fetch('/registration', options)
+            .then((response) => response.json())
+            .then((dt) => {
+                alert(dt.message);
+            })
+            .catch((error) => {
+                alert(error.message);
+            });
+    });
+</script>
+</body>
+</html>
