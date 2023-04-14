@@ -1,7 +1,10 @@
-# Vue 3 + Vite
+#### Frontend
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+1. Abra o terminal e navegue até a pasta `/frontend`.
+2. Execute o comando `npm install` para instalar as dependências do projeto.
+3. Execute o comando `npm run dev` para iniciar o servidor de desenvolvimento.
+4. Abra o navegador e acesse a URL `http://localhost:5173` para acessar o aplicativo.
 
-## Recommended IDE Setup
+## Licença
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+[MIT](https://opensource.org/licenses/MIT)
